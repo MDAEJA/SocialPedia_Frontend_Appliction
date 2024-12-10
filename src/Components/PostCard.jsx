@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 function PostCard({ post }) {
   const [commentShow, setCommentShow] = useState(false);
   const userName = useSelector((state)=>state.user.userName);
+  const userId = useSelector((state) => state.user._id); // Get user ID from Redux store
   const [liked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
   const [userImage,setUserImage] = useState("");
@@ -35,9 +36,9 @@ function PostCard({ post }) {
   },[])
 
   useEffect(() => {
-    const isLikedByUser = post.likes[post.userId];
+    const isLikedByUser = post.likes[userId];
     setLiked(isLikedByUser);
-  }, [post.likes, post.userId]);
+  }, [post.likes,userId]);
   
 
   if (!post) {
@@ -63,7 +64,7 @@ function PostCard({ post }) {
 
   const postImageUrl = post.picturePath ? `${post.picturePath}` : "";
 
-  const commentHandler = async (postId, userId, comment) => {
+  const commentHandler = async (postId, comment) => {
     try {
       if(userName === 'user'){
         toast.error("Please login to comments !");
@@ -92,14 +93,14 @@ function PostCard({ post }) {
     }
   };
 
-  const likeHandler = async (postId, userId) => {
+  const likeHandler = async (postId) => {
     try {
       if (userName === "user") {
         toast.error("Please login to like posts!");
         return;
       }
   
-      if (!postId || !userId) {
+      if (!postId) {
         toast.error("All fields are required");
         return;
       }
@@ -184,7 +185,7 @@ function PostCard({ post }) {
   className={`flex items-center px-4 py-2 rounded-md transition ${
     liked ? "bg-red-500 text-white" : "bg-gray-200 hover:bg-gray-300"
   } ${userName === "user" ? "opacity-50 cursor-not-allowed" : ""}`}
-  onClick={() => userName !== "user" && likeHandler(post._id, post.userId)}
+  onClick={() => userName !== "user" && likeHandler(post._id)}
   disabled={userName === "user"} // Disable button for non-logged-in users
 >
   <ThumbUp className={`mr-2 ${liked ? "text-white" : "text-red-500"}`} />
@@ -232,7 +233,7 @@ function PostCard({ post }) {
                 }`}
               > 
               
-                <h2 className="font-serif font-extrabold text-white">{userName}</h2>
+                <h2 className="font-serif font-extrabold text-white">{comment.userName}</h2>
                 <p className="text-white font-serif ">{comment.comment}</p>
               </div>
             ))
@@ -250,7 +251,7 @@ function PostCard({ post }) {
             />
             <button
               className="bg-blue-500 text-gray-950 font-serif font-extrabold px-4 py-2 rounded-lg hover:bg-blue-600"
-              onClick={() => commentHandler(post._id, post.userId, comment)}
+              onClick={() => commentHandler(post._id, comment)}
             >
               Send
             </button>

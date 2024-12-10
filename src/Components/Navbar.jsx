@@ -20,6 +20,9 @@ function Navbar() {
   const userName = useSelector((state)=> state.user.userName);
   const postShow = useSelector((state)=> state.post.postShow);
   const userPicture = useSelector((state) => state.user.picturePath);
+  const userId = useSelector((state) => state.user._id); // Get user ID from Redux store
+  
+
 
   const logoutHandler = ()=>{
     if(userName === 'user'){
@@ -27,11 +30,14 @@ function Navbar() {
       return;
     }
     const payload = {
-      name : "user"
+      name : "user",
+      _id : "",
+      token : ""
     }
     dispatch(setLogin(payload))
     navigate('/');
     setIsProfileEnable((pd)=> false)
+    console.log(userId);
     toast.success('User Logout!!');
   }
   return (
